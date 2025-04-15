@@ -7,15 +7,11 @@ const port = 3000;
 // Define which first path segment maps to which app
 const routeMap = {
   contact: "http://localhost:3002", // App 2
+  user: "http://localhost:3002", // App 2
   // everything else → App 1
 };
 
 const defaultTarget = "http://localhost:3001"; // App 1
-
-// Root path (optional)
-app.get("/", (req, res) => {
-  res.send("Reverse proxy running on http://localhost:3000");
-});
 
 // Proxy everything else
 app.use("*", (req, res, next) => {
