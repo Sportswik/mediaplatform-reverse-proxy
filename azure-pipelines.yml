@@ -1,0 +1,30 @@
+trigger:
+- main
+- dev
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '22.x'
+  displayName: 'Install Node.js'
+
+- task: ArchiveFiles@1
+  displayName: 'Archive files'
+  inputs:
+    rootFolder: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+
+- task: CopyFiles@2
+  displayName: 'Copy File to: $(TargetFolder)'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)'
+    Contents: '$(Build.BuildId).zip'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/mediaplatform-reverse-proxy'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: Mediaplatform Reverse Proxy'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/mediaplatform-reverse-proxy'
