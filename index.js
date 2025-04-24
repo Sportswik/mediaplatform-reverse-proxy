@@ -2,34 +2,37 @@ const express = require("express");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-// Define which first path segment maps to which app
-const routeMap = {
-  contact: "http://localhost:3002", // App 2
-  user: "http://localhost:3002", // App 2
-  // everything else → App 1
-};
+// Replace with your actual app URLs
+const REACT_APP_URL = "https://wa-admin-minfotboll-test.azurewebsites.net";
+const DOTNET_APP_URL = "https://mysoccertest.ontariosoccer.net";
 
-const defaultTarget = "http://localhost:3001"; // App 1
+const reactPaths = ["users", "api", "_next", "static"]; // static for images, CSS, etc.
 
-// Proxy everything else
+// Reverse proxy routing
 app.use("*", (req, res, next) => {
-  const fullPath = req.originalUrl || req.url; // full URL path
-  const pathParts = fullPath.split("/").filter(Boolean); // remove empty parts
+  const fullPath = req.originalUrl || req.url;
+  const pathParts = fullPath.split("/").filter(Boolean); // remove empty strings
+  const slug = pathParts[0] || "";
 
-  const slug = pathParts[0] || ""; // First path segment (or empty string)
-  const target = routeMap[slug] || defaultTarget;
+  // If the first path segment matches one of the React paths, go to React app
+  const target = reactPaths.includes(slug) ? REACT_APP_URL : DOTNET_APP_URL;
 
-  console.log(`➡️  Routing "${fullPath}" to ${target}`);
+  console.log(`➡️  Proxying "${fullPath}" → ${target}`);
 
   createProxyMiddleware({
     target,
     changeOrigin: true,
-    pathRewrite: (path, req) => path, // keep path as-is
+    pathRewrite: (path) => path, // preserve full path
   })(req, res, next);
 });
 
+// Optional: health check or welcome
+app.get("/", (req, res) => {
+  res.send("🟢 Azure reverse proxy running.");
+});
+
 app.listen(port, () => {
-  console.log(`✅ Proxy listening on http://localhost:${port}`);
+  console.log(`✅ Proxy running on http://localhost:${port}`);
 });
