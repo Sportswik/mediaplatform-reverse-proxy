@@ -5,8 +5,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // 🔗 Your backend services
-const REACT_APP_URL = "http://localhost:3001"; // React app URL (e.g., http://localhost:3001)
-const DOTNET_APP_URL = "https://mysoccertest.ontariosoccer.net";
+const REACT_APP_URL = process.env.REACT_APP_URL;
+const DOTNET_APP_URL = process.env.DOTNET_APP_URL;
 
 // 🔀 Proxy for React app at /new/*
 app.use(
