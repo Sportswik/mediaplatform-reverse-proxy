@@ -1,12 +1,14 @@
 import express from "express";
+import dotenv from "dotenv";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
+dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
 // 🔗 Your backend services
-const REACT_APP_URL = process.env.REACT_APP_URL;
-const DOTNET_APP_URL = process.env.DOTNET_APP_URL;
+const REACT_APP_URL = process.env.REACT_APP_URL || "http://localhost:3001";
+const DOTNET_APP_URL = process.env.DOTNET_APP_URL || "http://localhost:3002";
 
 // 🔀 Proxy for React app at /new/*
 app.use(
