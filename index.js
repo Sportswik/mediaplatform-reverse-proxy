@@ -1,13 +1,11 @@
 import express from "express";
-import dotenv from "dotenv";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
-dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
 // 🔗 Your backend services
-const REACT_APP_URL = "https://wa-admin-minfotboll-test.azurewebsites.net";
+const REACT_APP_URL = "https://wa-admin-minfotboll-test.azurewebsites.net"; // React app URL (e.g., http://localhost:3001)
 const DOTNET_APP_URL = "https://mysoccertest.ontariosoccer.net";
 
 // 🔀 Proxy for React app at /new/*
@@ -17,10 +15,7 @@ app.use(
     target: REACT_APP_URL,
     changeOrigin: true,
     xfwd: true,
-    pathRewrite: (path) => {
-      if (path.startsWith("/new")) return path;
-      else return "/new/" + path;
-    },
+    pathRewrite: (path) => "/new/" + path,
     logger: console,
   })
 );
@@ -34,6 +29,10 @@ app.use(
     xfwd: true,
     pathRewrite: (path) => path,
     logger: console,
+    onError(err, req, res) {
+      console.error("❌ .NET app proxy error:", err.message);
+      res.status(502).send("Proxy error connecting to .NET app.");
+    },
   })
 );
 
