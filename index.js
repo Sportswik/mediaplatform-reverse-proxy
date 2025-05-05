@@ -15,7 +15,7 @@ app.use(
     target: REACT_APP_URL,
     changeOrigin: true,
     xfwd: true,
-    pathRewrite: (path) => "/new/" + path,
+    pathRewrite: (path) => "/new" + (path === "/" ? "" : path),
     logger: console,
   })
 );
